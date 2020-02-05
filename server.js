@@ -11,17 +11,19 @@ let connection = mysql.createConnection({
     database: "employerTrackerDB"
 });
 
+
 connection.connect(function(err){
     if (err) {
     console.log(`error connecting: ${err.stack}`);
     return; 
     } 
-    promptuser();
+    runSearch();
 });
 
-function promptuser() {
+//prompt user to select action 
+function runSearch() {
     inquirer
-        .prompt({
+        .prompt({ 
             name: "action", 
             type: "rawlist", 
             message: "What would you like to do?", 
@@ -68,44 +70,48 @@ function promptuser() {
                     break;
                 case "remove employee":
                     removeEmployee();
+                    break;
             }
-        })
-};
+        });
+}
 
-function employeeSearch(){
-    connection.query("SELECT * FROM employees WHERE ?", {last_name: answer.last_name}, function(err, res){
-        console.log(
-            "id: " +
-            res[0].id +
-            " || first_name: " +
-            res[0].first_name +
-            " || last_name: " +
-            res[0].last_name +
-            " || role_id: " +
-            res[0].role_id
-        );
-        runSearch();
+//find a single employee
+function employeeSearch() {
+    inquirer 
+    .prompt({
+        name: "Employee", 
+        type: "input",
+        message: "Please enter the last name of the employee you are looking you"
     })
-};
+    .then(function(answer) {
+        let query = "SELECT id, first_name, last_name, role_id, manager_id FROM employees WHERE ?";
+        connection.query(query, {last_name: answer.last_name}, function(err, res){
+            for (let i = 0; i < res.length; i++){
+                console.log("id: " + res[i].id +
+                " || first_name: " + res[i].first_name +
+                " || last_name: " + res[i].last_name +
+                " || role_id: " + res[i].role_id +
+                "|| manager_id " + res[i].manager_id);
+            }
+            runSearch();
+        });
+    });
+}
 
 function employeesSearch(){
-    connection.query("SELECT * FROM employees", 
-    function(err, res) {
-        console.log(
-            "id: " +
-            res[0].id +
-            " || first_name: " +
-            res[0].first_name +
-            " || last_name: " +
-            res[0].last_name +
-            " || role_id: " +
-            res[0].role_id +
-            " || manager_id: " +
-            res[0].manager_id
-        );
+    let query = "SELECT * FROM employees";
+    connection.query(query, function(err, res) {
+        for (let i = 0; i < res.length; i++){
+            console.log("id: " + res[i].id +
+            " || first_name: " + res[i].first_name +
+            " || last_name: " + res[i].last_name +
+            " || role_id: " + res[i].role_id +
+            "|| manager_id " + res[i].manager_id);
+        }
         runSearch();
-        })
-};
+        });
+}
+
 
 function departmentSearch(){
     connection.query("SELECT * department WHERE ?", {id: answer.name}, function(err, res){

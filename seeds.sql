@@ -4,7 +4,7 @@ INSERT INTO employees (first_name, last_name, role_id, manager_id)
 VALUES ("Christine", "Camou", 1, 1);
 
 INSERT INTO employees (first_name, last_name, role_id, manager_id)
-VALUES ("Ryanne", "Camou", 2, 1);
+VALUES ("Ryanne", "Tayla", 2, 1);
 
 
 INSERT INTO role (title, salary, department_id)
