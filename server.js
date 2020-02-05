@@ -11,7 +11,7 @@ let connection = mysql.createConnection({
     database: "employerTrackerDB"
 });
 
-
+//use the database to get information 
 connection.connect(function(err){
     if (err) {
     console.log(`error connecting: ${err.stack}`);
@@ -27,11 +27,11 @@ function runSearch() {
             name: "action", 
             type: "rawlist", 
             message: "What would you like to do?", 
+            //choices to pick once prompted
             choices: [
                 "find employee", 
                 "find all employees", 
-                "find deparments", 
-                "find salaries", 
+                "find deparments",  
                 "find roles",
                 "view employee manager",
                 "add employee", 
@@ -39,7 +39,7 @@ function runSearch() {
                 "update employee manager",
                 "remove employee",
             ]
-        })
+        }) //use selection to run the function
         .then(function(answer){
             switch (answer.action) {
                 case "find employee":
@@ -51,9 +51,7 @@ function runSearch() {
                 case "find deparments":
                     departmentSearch();
                     break;
-                case "find salaries":
-                    salariesSearch();
-                    break;
+
                 case "find roles":
                     rolesSearch();
                     break;
@@ -84,7 +82,7 @@ function employeeSearch() {
         message: "Please enter the last name of the employee you are looking you"
     })
     .then(function(answer) {
-        let query = "SELECT id, first_name, last_name, role_id, manager_id FROM employees WHERE ?";
+        let query = "SELECT * FROM employees WHERE ?";
         connection.query(query, {last_name: answer.last_name}, function(err, res){
             for (let i = 0; i < res.length; i++){
                 console.log("id: " + res[i].id +
@@ -114,61 +112,70 @@ function employeesSearch(){
 
 
 function departmentSearch(){
-    connection.query("SELECT * department WHERE ?", {id: answer.name}, function(err, res){
+    inquirer 
+    .prompt({
+        name: "Department", 
+        type: "input", 
+        message: "What department are you looking for?"
+    }) 
+    .then(function(answer){
+    let query = "SELECT name FROM department WHERE ?";
+    connection.query(query,  {id: answer.name},function(err, res){
+        for (let i=0; i < res.length; i++) {
         console.log(
-            "id: " +
-            res[0].name 
-        );
-        runSearch();
-    })
-};
-
-function salariesSearch(){
-    connection.query("SELECT * FROM role WHERE ?", {salary: answer.salary}, function(err, res){
-        console.log(
-            "id: " +
-            res[0].id +
-            "title: "+
-            res[0].title +
-            " || salary" +
-            res[0].salary +
-            "department_id: " +
-            res[0].department_id
-        );
-        runSearch();
-    })
-};
-                
-                
-function rolesSearch(){
-    connection.query("SELECT * FROM role WHERE ?", {role_id: answer.role_id}, function(err, res){
-        console.log(
-            "id: " +
-            res[0].id +
-            " || title: " +
-            res[0].title 
-        );
+            "Department: " +
+            res[i].name);
+        }
         runSearch();
     });
+});
 };
-
-function managerSearch(){
-    connection.query("SELECT * FROM employees WHERE ?", {manager: answer.manager_id}, function(err, res){
+          
+function rolesSearch(){
+    inquirer 
+    .prompt({
+        name: "Role", 
+        type: "input", 
+        message: "What role are you looking for?"
+    }) 
+    .then(function(answer){
+    let query = "SELECT title FROM role WHERE ?";
+    connection.query(query,  {id: answer.title},function(err, res){
+        for (let i=0; i < res.length; i++) {
         console.log(
             "id: " +
-            res[0].id +
-            " || first_name: " +
-            res[0].first_name +
-            " || last_name: " +
-            res[0].last_name +
-            " || role_id: " +
-            res[0].role_id +
-            " || manager_id : " +
-            res[0].manager_id
-        );
+            res[i].id +
+            "title: " +
+            res[i].title +
+            "department_id: " +
+            res[i].department_id);
+        }
         runSearch();
-    })
-};
+    });
+});
+};        
+
+function managerSearch(){
+    inquirer 
+    .prompt({
+        name: "manager", 
+        type: "input", 
+        message: "What manager are you looking for?"
+    }) 
+    .then(function(answer){
+    let query = "SELECT manager_id FROM employees WHERE ?";
+    connection.query(query,  {manager_id: answer.manager_id},function(err, res){
+        for (let i=0; i < res.length; i++) {
+        console.log(
+            "id: " +
+            res[i].id +
+            "manager: " +
+            res[i].manager_id);
+        }
+        runSearch();
+    });
+});
+};        
 
 function addEmployee(){
     connection.query("INSERT INTO employees", function(err, res){
