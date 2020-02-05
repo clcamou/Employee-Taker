@@ -1,10 +1,8 @@
-DROP DATABASE IF EXISTS employerTakerB;
-
--- create the database employerTakerDB and specified for use
+DROP DATABASE IF EXISTS employerTrackerDB;
 
 CREATE DATABASE employerTrackerDB;
 
-USE employerTakerDB;
+USE employerTrackerDB;
 
 -- create the table employees
 
@@ -13,7 +11,7 @@ CREATE TABLE employees (
     first_name VARCHAR(30), 
     last_name VARCHAR(30),
     role_id INT(10),
-    manager_id INT (10) null, 
+    manager_id INT (10) null
 );
 
 CREATE TABLE  role(
@@ -25,5 +23,5 @@ CREATE TABLE  role(
 
 CREATE TABLE department (
     id INT primary key AUTO_INCREMENT NOT NULL, 
-    name VARCHAR(30)
+    department VARCHAR(30)
 );
