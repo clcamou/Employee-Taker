@@ -1,6 +1,6 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
-
+const cTable = require("console.table");
 //create connection with mysql
 const connection = mysql.createConnection({
     host: "localhost", 
@@ -26,10 +26,12 @@ function runSearch() {
             //choices to pick once prompted
             choices: [
                 "find all employees", 
-                "find deparments",  
+                "find departments",  
                 "find roles",
                 "add employee", 
-                "update employee role"
+                "update employee role", 
+                "add department", 
+                "add role"
             ]
         }) //use selection to run the function
         .then(function(answer){
@@ -37,10 +39,10 @@ function runSearch() {
                 case "find all employees":
                     employeesSearch();
                     break;
-                case "find by departments":
+                case "find departments":
                     departmentSearch();
                     break;
-                case "find by roles":
+                case "find roles":
                     rolesSearch();
                     break;
                 case "add employee":
@@ -63,13 +65,7 @@ function runSearch() {
 function employeesSearch(){
     let query = "SELECT * FROM employees";
     connection.query(query, function(err, res) {
-        for (let i = 0; i < res.length; i++){
-            console.log("id: " + res[i].id +
-            " || first_name: " + res[i].first_name +
-            " || last_name: " + res[i].last_name +
-            " || role_id: " + res[i].role_id +
-            "|| manager_id " + res[i].manager_id);
-        }
+            console.table(res)
         runSearch();
         });
 }
@@ -78,40 +74,32 @@ function employeesSearch(){
 function departmentSearch(){
     inquirer 
     .prompt({
-        name: "find by department", 
-        type: "list", 
+        name: "department", 
+        type: "input", 
         message: "What department are you looking for?", 
-        choices: ["school", "home"]
     }) 
-    .then(function(choices) {
-        let query = "SELECT department FROM department WHERE ?";
-        connection.query(query, {department: choices.department}, function(err, res){
-            for (let i = 0; i < res.length; i++) {
-                console.log("find by department: " + res[i].department);
+    .then(function(answer) {
+        let query = "SELECT "
+        connection.query("SELECT * FROM department WHERE ?", {department: answer.department}, function(err, res){
+            for (let i = 0; i < res.length; i++){
+                console.table(res[i]);
             }
             runSearch();
         });
     });
-}
+}                                                                                                                                  
 //pull up a list by role
 function rolesSearch(){
     inquirer 
     .prompt({
-        name: "Role", 
+        name: "title", 
         type: "input", 
         message: "What role are you looking for?"
     }) 
     .then(function(answer){
-    let query = "SELECT title FROM role WHERE ?";
-    connection.query(query,  {id: answer.title},function(err, res){
-        for (let i=0; i < res.length; i++) {
-        console.log(
-            "id: " +
-            res[i].id +
-            "title: " +
-            res[i].title +
-            "department_id: " +
-            res[i].department_id);
+        connection.query("SELECT * FROM role WHERE ?", {title: answer.title}, function(err, res){
+        for(let i = 0; i < res.length; i++){
+        console.table(res[i]);
         }
         runSearch();
     });
