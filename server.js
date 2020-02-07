@@ -102,7 +102,92 @@ function rolesSearch(){
             runSearch();
         });
     });
-}     
+}   
+
+function addDepartment(){
+    inquirer
+    .prompt({
+        type: "input", 
+        name: "id", 
+        message: "Please enter in a new  department id"
+    }, 
+    {
+        type: "input", 
+        name: "department_division", 
+        message: "Please name the new division"
+    })
+    .then(function(answer) {
+        connection.query("INSERT INTO department VALUES(?)", [answer.id, answer.department_division], function(err, res){
+            for (let i = 0; i < res.length; i++){
+                console.table(res[i]);
+            }
+            runSearch();
+        });
+    });
+}
 
 //add new employee
+function addEmployee(){
+    inquirer
+    .prompt[{
+        name: "id",
+        type: "input", 
+        message: "Please give an id to the employee", 
+    },{
+        name: "last_name", 
+        type: "input", 
+        message: "What is the new employee's last name?"
+    },{
+        name: "first_name", 
+        type: "input", 
+        message: "What is the new employee's first name?"
+    }, {
+        name: "role_id", 
+        type: "list", 
+        message: "What is their title", 
+        choices: ["Teacher, Kiddo, Sound Engineer"]
+    },{
+        name: "manager_id", 
+        type: "list", 
+        message: "Who is their manager", 
+        choices: ["1, 2, 3, none"]
+    }]
+};
 
+function addRole(){
+    inquirer
+    .prompt[{
+        name: "id",
+        type: "input", 
+        message: "What role id is it?", 
+
+    },{
+        name: "title", 
+        type: "input", 
+        message: "What title is it?"
+    },{
+        name: "salary",
+        type: "input", 
+        message: "What salary does this role make?" 
+    },{
+        name: "department_id", 
+        type: "input", 
+        message: "What department is it in?"
+    }]
+};
+
+function updateEmployeeRole(){
+    inquirer
+    .prompt[{
+        name: "id", 
+        type: "input", 
+        message: "What is the employee's id?"
+    },{
+        name: "role", 
+        type: "input", 
+        message: "What is their new role?"
+    }]
+    .then(function(data){
+
+    })
+}
