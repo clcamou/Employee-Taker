@@ -11,7 +11,8 @@ CREATE TABLE employees (
     first_name VARCHAR(30), 
     last_name VARCHAR(30),
     role_id INT(10),
-    manager_id INT (10) null
+    manager_id INT (10) null,
+    department_id INT(10)
 );
 
 CREATE TABLE  role(
@@ -23,5 +24,5 @@ CREATE TABLE  role(
 
 CREATE TABLE department (
     id INT primary key AUTO_INCREMENT NOT NULL, 
-    department VARCHAR(30)
+    department_division VARCHAR(30)
 );

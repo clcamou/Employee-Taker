@@ -70,39 +70,39 @@ function employeesSearch(){
         });
 }
 
-//pull up a department (in theory)
+//pull up employees by department 
 function departmentSearch(){
     inquirer 
     .prompt({
-        name: "department", 
+        name: "department_division", 
         type: "input", 
         message: "What department are you looking for?", 
     }) 
     .then(function(answer) {
-        let query = "SELECT "
-        connection.query("SELECT * FROM department WHERE ?", {department: answer.department}, function(err, res){
+        connection.query("SELECT department_division, last_name, first_name FROM department JOIN employees ON department.id = employees.department_id WHERE department.department_division = ?", [answer.department_division, answer.last_name, answer.first_name], function(err, res){
             for (let i = 0; i < res.length; i++){
                 console.table(res[i]);
             }
             runSearch();
         });
     });
-}                                                                                                                                  
-//pull up a list by role
+}                                                                                                               //pull up employees by thier role 
 function rolesSearch(){
     inquirer 
     .prompt({
         name: "title", 
         type: "input", 
-        message: "What role are you looking for?"
+        message: "What role are you looking for?", 
     }) 
-    .then(function(answer){
-        connection.query("SELECT * FROM role WHERE ?", {title: answer.title}, function(err, res){
-        for(let i = 0; i < res.length; i++){
-        console.table(res[i]);
-        }
-        runSearch();
+    .then(function(answer) {
+        connection.query("SELECT title, last_name, first_name FROM role JOIN employees ON role.id = employees.role_id WHERE role.title = ?", [answer.title, answer.last_name, answer.first_name], function(err, res){
+            for (let i = 0; i < res.length; i++){
+                console.table(res[i]);
+            }
+            runSearch();
+        });
     });
-});
-};        
+}     
+
+//add new employee
 
