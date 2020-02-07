@@ -26,12 +26,15 @@ function runSearch() {
             //choices to pick once prompted
             choices: [
                 "find all employees", 
-                "find departments",  
-                "find roles",
+                "find by departments",  
+                "find by roles",
+                "find by manager",
                 "add employee", 
                 "update employee role", 
+                "update manager",
                 "add department", 
-                "add role"
+                "add role",
+                "delete",
             ]
         }) //use selection to run the function
         .then(function(answer){
@@ -39,11 +42,14 @@ function runSearch() {
                 case "find all employees":
                     employeesSearch();
                     break;
-                case "find departments":
+                case "find by departments":
                     departmentSearch();
                     break;
-                case "find roles":
+                case "find by roles":
                     rolesSearch();
+                    break;
+                case "find by manager":
+                    managerSearch();
                     break;
                 case "add employee":
                     addEmployee();
@@ -57,18 +63,24 @@ function runSearch() {
                 case "add role":
                     addRole();
                     break;
+                case "update manager":
+                    updateManager();
+                    break;
+                case "delete":
+                    deleteData();
+                    break;
+                
             }
         });
 }
 
 //pull all employees 
 function employeesSearch(){
-    let query = "SELECT * FROM employees";
-    connection.query(query, function(err, res) {
+    connection.query("SELECT * FROM employees", function(err, res) {
             console.table(res)
         runSearch();
         });
-}
+};
 
 //pull up employees by department 
 function departmentSearch(){
@@ -86,7 +98,7 @@ function departmentSearch(){
             runSearch();
         });
     });
-}                                                                                                               //pull up employees by thier role 
+};                                                                                                               //pull up employees by thier role 
 function rolesSearch(){
     inquirer 
     .prompt({
@@ -102,11 +114,30 @@ function rolesSearch(){
             runSearch();
         });
     });
-}   
+};   
 
+//pull up employees by their manager
+function managerSearch(){
+    inquirer 
+    .prompt({
+        name: "manager_id", 
+        type: "input", 
+        message: "Which manager are you looking for?", 
+    }) 
+    .then(function(answer) {
+        connection.query("SELECT manager_id, last_name, first_name FROM employees WHERE employees.manager_id = ?", [answer.manager_id, answer.last_name, answer.first_name], function(err, res){
+            for (let i = 0; i < res.length; i++){
+                console.table(res[i]);
+            }
+            runSearch();
+        });
+    });
+}; 
+
+//add a department
 function addDepartment(){
     inquirer
-    .prompt({
+    .prompt([{
         type: "input", 
         name: "id", 
         message: "Please enter in a new  department id"
@@ -115,48 +146,50 @@ function addDepartment(){
         type: "input", 
         name: "department_division", 
         message: "Please name the new division"
-    })
+    }])
     .then(function(answer) {
-        connection.query("INSERT INTO department VALUES(?)", [answer.id, answer.department_division], function(err, res){
-            for (let i = 0; i < res.length; i++){
-                console.table(res[i]);
-            }
-            runSearch();
-        });
-    });
-}
+        connection.query("INSERT INTO department VALUES(?, ?)" ,[answer.id, answer.department_division], console.table("You have added the new id" + answer.id + "for the new department " + answer.department_division),
+            runSearch()
+        )});
+};
 
 //add new employee
 function addEmployee(){
     inquirer
-    .prompt[{
+    .prompt([{
         name: "id",
         type: "input", 
         message: "Please give an id to the employee", 
     },{
-        name: "last_name", 
-        type: "input", 
-        message: "What is the new employee's last name?"
-    },{
         name: "first_name", 
         type: "input", 
         message: "What is the new employee's first name?"
+    },{
+        name: "last_name", 
+        type: "input", 
+        message: "What is the new employee's last name?"
     }, {
         name: "role_id", 
-        type: "list", 
-        message: "What is their title", 
-        choices: ["Teacher, Kiddo, Sound Engineer"]
+        type: "input", 
+        message: "What is their title"
     },{
         name: "manager_id", 
-        type: "list", 
+        type: "input", 
         message: "Who is their manager", 
-        choices: ["1, 2, 3, none"]
-    }]
+    },{
+        name: "department_id", 
+        type: "input",
+        message: "What department do they belong to?"
+    }])
+    .then(function(answer) {
+        connection.query("INSERT INTO employees VALUES(?, ?, ?, ?, ?, ?)" ,[answer.id, answer.first_name, answer.last_name, answer.role_id, answer.manager_id, answer.department_id], console.table("You have added " + answer.id  + answer.first_name + answer.last_name + answer.role_id + answer.manager_id + answer.department_id + " to employees"),
+            runSearch()
+    )});
 };
 
 function addRole(){
     inquirer
-    .prompt[{
+    .prompt([{
         name: "id",
         type: "input", 
         message: "What role id is it?", 
@@ -173,21 +206,102 @@ function addRole(){
         name: "department_id", 
         type: "input", 
         message: "What department is it in?"
-    }]
+    }]).then(function(answer) {
+        connection.query("INSERT INTO role VALUES(?, ?, ?, ?)" ,[answer.id, answer.title, answer.salary, answer.department_id], console.table("You have added " + answer.id + answer.title + answer.salary + answer.department_id), 
+            runSearch()
+    )});
 };
 
 function updateEmployeeRole(){
     inquirer
-    .prompt[{
+    .prompt([{
+            name: "id", 
+            type: "input", 
+            message: "What is the employee's id?"
+        },{
+            name: "role_id", 
+            type: "input", 
+            message: "What is their new role?"
+    }])
+    .then(function(answer) {
+        connection.query("UPDATE employees SET role_id = ? WHERE id = ?" , [answer.id, answer.role_id], console.table("You have updaded " + answer.id + "to" + answer.role_id),
+            runSearch()
+    )});
+};
+
+//update manager 
+function updateManager(){
+    inquirer
+    .prompt([{
+            name: "id", 
+            type: "input", 
+            message: "What is the employee's id?"
+        },{
+            name: "manager_id", 
+            type: "input", 
+            message: "Who is their new manager (use manager id)?"
+    }])
+    .then(function(answer) {
+        connection.query("UPDATE employees SET id = ? WHERE manager_id = ?" ,[answer.id, answer.manager_id], console.table("You have updated " + answer.id + "to" + answer.manager_id), 
+            runSearch()
+    )});
+};
+
+function deleteData(){
+    inquirer
+    .prompt({
+        name: "delete", 
+        type: "rawlist", 
+        message: "What do you want to delete?",
+        choices: ["employee", "role", "department"]
+    })
+    .then(function(answer){
+        switch(answer.delete) {
+            case "employee":
+                deleteEmployee();
+                break;
+            case "department":
+                deleteDepartment();
+                break;
+            case "role":
+                deleteRole();
+                break;
+        }});
+};
+
+function deleteEmployee(){
+    inquirer
+    .prompt({
         name: "id", 
         type: "input", 
-        message: "What is the employee's id?"
-    },{
-        name: "role", 
-        type: "input", 
-        message: "What is their new role?"
-    }]
-    .then(function(data){
-
+        message: "Please use employee id to delete employee from database"
     })
-}
+    .then(function(answer){
+        connection.query("DELETE FROM employees WHERE id = ?", [answer.id], console.table("You have deleted employee " + answer.id), 
+        deleteData()
+    )});
+};
+
+function deleteDepartment(){
+    inquirer
+    .prompt({
+        name: "id", 
+        type: "input", 
+        message: "Please use department id to delete the department"
+    })
+    .then(function(answer){
+        connection.query("DELETE FROM department WHERE id = ?", [answer.id], console.table("Deleted department " + answer.id), deleteData()
+    )});
+};
+
+function deleteRole(){
+    inquirer
+    .prompt({
+        name: "id", 
+        type: "input", 
+        message: "Please use role id to delete role"
+    })
+    .then(function(answer){
+        connection.query("DELETE FROM role WHERE id = ?", [answer.id], console.table("Deleted role " + answer.id), runSearch())
+    });
+};
