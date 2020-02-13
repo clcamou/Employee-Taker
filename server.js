@@ -1,6 +1,14 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 const cTable = require("console.table");
+let express = require("express");
+let app = express();
+
+app.use(express.urlencoded({extended: true}));
+app.use(express.json());
+
+let PORT = process.env.PORT || 8080; 
+
 //create connection with mysql
 const connection = mysql.createConnection({
     host: "localhost", 
@@ -15,6 +23,7 @@ connection.connect(function(err){
     if (err) throw err; 
     runSearch();
 });
+
 
 //prompt user to select action 
 function runSearch() {
@@ -350,3 +359,7 @@ function updateEmployeeRole(){
             runSearch()
     )});
 };
+
+app.listen(PORT, function(){
+    console.log("Here it is " + PORT)
+});
