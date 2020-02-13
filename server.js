@@ -89,7 +89,7 @@ function departmentSearch(){
         name: "department_division", 
         type: "input", 
         message: "Sort employees by department", 
-    }) 
+    })
     .then(function(answer) {
         connection.query("SELECT department_division, last_name, first_name FROM department JOIN employees ON department.id = employees.department_id WHERE department.department_division = ?", [answer.department_division, answer.last_name, answer.first_name], function(err, res){
             for (let i = 0; i < res.length; i++){

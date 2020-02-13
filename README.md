@@ -13,10 +13,12 @@ console.table
 3. Mysql Workbench
 4. JavaScript 
 
+# Examples 
+
 # Author 
 Christine Camou
 
 # Links 
 
 1. Github code: https://github.com/clcamou/Employee-Tracker
-2. Github hosted: https://clcamou.github.io/Employee-Tracker/
+2. Heroku hosted: https://git.heroku.com/polar-caverns-51817.git
