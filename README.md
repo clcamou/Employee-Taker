@@ -14,6 +14,10 @@ console.table
 4. JavaScript 
 
 # Examples 
+C
+Read Function [Recording of Employee Tracker](demo/demo1.gif)
+U
+D
 
 # Author 
 Christine Camou
