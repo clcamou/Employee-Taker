@@ -14,10 +14,10 @@ console.table
 4. JavaScript 
 
 # Examples 
-1. C
-2. Read Function [Recording of Employee Tracker](Demo/demo1.gif)
-3. U
-4. D
+1. Create Function [Demo of Creating Information](Demo/demo2.gif)
+2. Read Function [Demo of View Information](Demo/demo1.gif)
+3. Update Function [Demo of Updating Information](Demo/demo3.gif)
+4. Delete Function [Demo of Deleting Information](Demo/demo4.gif)
 
 # Author 
 Christine Camou
